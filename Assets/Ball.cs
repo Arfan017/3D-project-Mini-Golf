@@ -7,7 +7,10 @@ public class Ball : MonoBehaviour
 {
     [SerializeField] Rigidbody rb;
     public Vector3 Position => rb.position;
-    public bool IsMoving => rb.velocity != Vector3.zero;
+    public bool IsMoving => rb.velocity != Vector3.zero || isTeleporting;
+    public bool IsTeleporting => isTeleporting;
+    Vector3 lastPosition;
+    bool isTeleporting;
 
     private void Awake()
     {
@@ -15,10 +18,13 @@ public class Ball : MonoBehaviour
         {
             rb = GetComponent<Rigidbody>();
         }
+        lastPosition = this.transform.position;
     }
 
     internal void addForce(Vector3 force)
     {
+        rb.isKinematic = false;
+        lastPosition = this.transform.position;
         rb.AddForce(force, ForceMode.Impulse);
     }
 
@@ -27,6 +33,25 @@ public class Ball : MonoBehaviour
         if (rb.velocity != Vector3.zero && rb.velocity.magnitude < 0.5f)
         {
             rb.velocity = Vector3.zero;
+            rb.isKinematic = true;
         }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "Out")
+        {
+            StopAllCoroutines();
+            StartCoroutine(DelaydTeleport());
+        }
+    }
+
+    IEnumerator DelaydTeleport()
+    {
+        isTeleporting = true;
+        yield return new WaitForSeconds(3);
+        rb.isKinematic = true;
+        this.transform.position = lastPosition;
+        isTeleporting = false;
     }
 }
