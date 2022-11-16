@@ -23,4 +23,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/3DMaze.unity
     guid: dbd169f44631fc34da0f42b299e912bc
+
+    path: Assets/Scenes/Level3.unity
+    guid: c0995fac835866b46b1c01029d7baa1c
   m_configObjects: {}
